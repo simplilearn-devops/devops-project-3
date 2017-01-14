@@ -1,0 +1,50 @@
+<project name="Numbers" default="compile" basedir=".">
+   <description>Project build file</description>
+   <property name="jar" value="Numbers.jar"/>
+   <property name="main-class" value="devops.numbers.NumberWordsApplication"/>
+   <path id="class.path">
+      <fileset dir="lib">
+         <include name="**/*.jar"/>
+      </fileset>
+   </path>
+   <target name="init">
+      <mkdir dir="bin"/>
+      <mkdir dir="report"/>
+   </target>
+   <target name="compile" depends="init">
+      <javac srcdir="src" destdir="bin" includeantruntime="false">
+         <classpath refid="class.path"/>
+      </javac>
+      <javac srcdir="test" destdir="bin" includeantruntime="false">
+         <classpath refid="class.path"/>
+      </javac>
+   </target>
+   <target name="test" depends="compile">
+      <junit printsummary="yes" haltonfailure="yes">
+        <classpath refid="class.path"/>
+        <classpath location="bin"/>
+        <formatter type="plain"/>
+        <batchtest fork="yes" todir="report">
+           <fileset dir="test">
+              <include name="**/*java"/>
+           </fileset>
+        </batchtest>
+      </junit>
+   </target>
+   <target name="dist" depends="test">
+      <manifestclasspath property="manifest.classpath" jarfile="${jar.file}">
+         <classpath refid="class.path"/>
+      </manifestclasspath>
+      <jar jarfile="${jar}" basedir="bin">
+         <manifest>
+            <attribute name="Main-Class" value="${main-class}"/>
+            <attribute name="Class-Path" value="${manifest.classpath}"/>
+         </manifest>
+      </jar>
+   </target>
+   <target name="clean">
+      <delete dir="bin"/>
+      <delete dir="report"/>
+      <delete file="${jar}"/>
+   </target>
+</project>
